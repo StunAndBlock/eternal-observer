@@ -2,24 +2,31 @@
 
 ui::Launcher::Launcher(){
     stageRepr_ = {
-        {STAGE_LEVEL::STARTING, L"starting loadup"},
-        {STAGE_LEVEL::REGISTER_CONFIGURATION, L"stage: configurating"},
-        {STAGE_LEVEL::PREPARING_CORE, L"stage: preparing core"},
-        {STAGE_LEVEL::NET_WARMUP, L"stage: warmaping network" },
-        {STAGE_LEVEL::FINISHING, L"stage: polishing and syncing"},
-        {STAGE_LEVEL::COMPLETED, L"loadup finished"}
+        {usecase::ILauncher::STAGE_LEVEL::STARTING, L"starting loadup"},
+        {usecase::ILauncher::STAGE_LEVEL::REGISTER_CONFIGURATION, L"stage: configurating"},
+        {usecase::ILauncher::STAGE_LEVEL::PREPARING_CORE, L"stage: preparing core"},
+        {usecase::ILauncher::STAGE_LEVEL::NET_WARMUP, L"stage: warmaping network" },
+        {usecase::ILauncher::STAGE_LEVEL::FINISHING, L"stage: polishing and syncing"},
+        {usecase::ILauncher::STAGE_LEVEL::COMPLETED, L"loadup finished"}
     };
-    currentStage_ = STAGE_LEVEL::STARTING;
+    currentStage_ = usecase::ILauncher::STAGE_LEVEL::STARTING;
 }
 
-void ui::Launcher::set_stage(const STAGE_LEVEL sl){
+void ui::Launcher::set_stage(const usecase::ILauncher::STAGE_LEVEL sl){
     PostMessage(wnd_, WM_UPDATE_STAGE_, NULL, (LPARAM)sl);
 }
 
 
 void ui::Launcher::testNotification(){
-    MessageBox(wnd_, L"detected first start, be sure to configure application later", L"", 
-                MB_YESNO | MB_ICONQUESTION);
+    MessageBox(wnd_, L"Detected first start, be sure to configure application later!", L"", 
+                MB_OK | MB_ICONWARNING | MB_APPLMODAL);
+}
+
+
+void ui::Launcher::fatalErrorNotification(){
+    MessageBox(wnd_, L"Fatal error", L"", 
+                MB_OK | MB_ICONERROR | MB_APPLMODAL);
+    DestroyWindow(wnd_);
 }
 
 
@@ -66,7 +73,7 @@ LRESULT __stdcall ui::Launcher::handler(UINT msg , WPARAM wParam, LPARAM lParam)
     }
     break;
     case WM_UPDATE_STAGE_: {
-        currentStage_ = (STAGE_LEVEL)lParam;
+        currentStage_ = (usecase::ILauncher::STAGE_LEVEL)lParam;
         InvalidateRect(wnd_, NULL, TRUE);
         UpdateWindow(wnd_);
         break;

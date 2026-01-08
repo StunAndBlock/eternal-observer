@@ -8,7 +8,8 @@ namespace usecase {
 
 
     struct config {
-        std::wstring observerCoreCmd_;
+        std::wstring dpmWrapperPath;
+        std::wstring dpmWrapperArguments;
     };
 
     class Config {

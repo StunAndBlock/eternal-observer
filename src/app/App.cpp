@@ -1,6 +1,6 @@
 #include "app/App.hpp"
 
-App::App(HINSTANCE hInstance) : uConfigurator_(L"observer.cfg"), uLauncher_(&uConfigurator_, &uConfig_){
+App::App(HINSTANCE hInstance) : uConfigurator_(L"observer.cfg"), uLauncher_(&uConfigurator_, &uConfig_, &uDPMWrapper_, &uNetChecker_){
     hInstance_ = hInstance;
 }
 
@@ -21,10 +21,25 @@ void App::dispatch(){
     }
 }
 
+void App::mainframe(){
+    usecase::Launcher::STATUS code = uLauncher_.start();
+    switch (code)
+    {
+    case usecase::Launcher::STATUS::OK:
+        break;
+    case usecase::Launcher::STATUS::WARNING:
+        break;
+    default:
+        uLauncher_.fatalErrorNotification();
+        PostThreadMessage(mainThread_,WM_QUIT, 0, 0);
+        return;
+    }
+    return;
+}
+
 int App::start(){
-
-
-    std::thread th(&usecase::Launcher::start, &uLauncher_);
+    mainThread_ = GetCurrentThreadId();
+    std::thread th(&App::mainframe, this);
     this->dispatch();
     if (th.joinable()) {
         th.join();

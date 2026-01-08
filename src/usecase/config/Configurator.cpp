@@ -21,7 +21,7 @@ usecase::Configurator::STATUS usecase::Configurator::load(struct config& data, c
         return STATUS::ERR;
     }
     if (code != STATUS::FIRST_START) {
-        CFG::ReadFile(fileDiscriptor_, repr, data.observerCoreCmd_);
+        CFG::ReadFile(fileDiscriptor_, repr, data.dpmWrapperPath, data.dpmWrapperArguments);
     }
     return code;
 }
@@ -31,6 +31,6 @@ usecase::Configurator::STATUS usecase::Configurator::save(const struct config& d
     if (!fileDiscriptor_.good()){
         return STATUS::ERR;
     }
-    CFG::WriteFile(fileDiscriptor_, repr, data.observerCoreCmd_);
+    CFG::WriteFile(fileDiscriptor_, repr, data.dpmWrapperPath, data.dpmWrapperArguments);
     return STATUS::OK;
 }
